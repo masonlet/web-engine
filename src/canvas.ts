@@ -17,10 +17,13 @@ export function createGameCanvas(): {
   window.addEventListener("resize", onResize);
   onResize();
 
+  let destroyed = false;
   return {
     canvas,
     ctx,
     destroy: () => {
+      if (destroyed) return;
+      destroyed = true;
       window.removeEventListener("resize", onResize);
       canvas.remove();
     }

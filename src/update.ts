@@ -46,5 +46,10 @@ export function startLoop(
   }
   reqId = requestAnimationFrame(frame);
 
-  return { stop: () => { if (reqId !== null) cancelAnimationFrame(reqId) } };
+  return { stop: () => {
+    if (reqId !== null) {
+      cancelAnimationFrame(reqId);
+      reqId = null;
+    }
+  } };
 }
