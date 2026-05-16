@@ -1,4 +1,4 @@
-let initialized = false;
+let isKeyboardInitialized = false;
 const keys = new Set<string>();
 const pressedThisFrame = new Set<string>();
 let pressedFrame = new Set<string>();
@@ -11,17 +11,18 @@ const onKeyUp = (e: KeyboardEvent) => { keys.delete(e.code); };
 const onBlur = () => keys.clear();
 
 export function initKeyboard(): () => void {
-  if (initialized) throw new Error("initKeyboard: already initialized, call cleanup first");
-  initialized = true;
+  if (isKeyboardInitialized) throw new Error("initKeyboard: already initialized, call cleanup first");
+  isKeyboardInitialized = true;
 
   window.addEventListener("keydown", onKeyDown);
   window.addEventListener("keyup", onKeyUp);
   window.addEventListener("blur", onBlur);
 
   return () => {
-    initialized = false;
+    isKeyboardInitialized = false;
     keys.clear();
     pressedThisFrame.clear();
+    pressedFrame.clear();
     window.removeEventListener("keydown", onKeyDown);
     window.removeEventListener("keyup", onKeyUp);
     window.removeEventListener("blur", onBlur);

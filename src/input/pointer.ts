@@ -1,4 +1,4 @@
-let initialized = false;
+let isPointerInitialized = false;
 const down = new Set<number>();
 const clicked = new Set<number>();
 const released = new Set<number>();
@@ -32,8 +32,8 @@ const onMove = (e: PointerEvent) => updatePos(e);
 const onBlur = () => down.clear();
 
 export function initPointer(canvas: HTMLCanvasElement): () => void {
-  if (initialized) throw new Error("initPointer: already initialized, call cleanup first");
-  initialized = true;
+  if (isPointerInitialized) throw new Error("initPointer: already initialized, call cleanup first");
+  isPointerInitialized = true;
 
   canvasRef = canvas;
 
@@ -43,11 +43,13 @@ export function initPointer(canvas: HTMLCanvasElement): () => void {
   window.addEventListener("blur", onBlur);
 
   return () => {
-    initialized = false;
+    isPointerInitialized = false;
     canvasRef = null;
     down.clear();
     clicked.clear();
     released.clear();
+    clickedFrame.clear();
+    releasedFrame.clear();
     window.removeEventListener("pointerdown", onDown);
     window.removeEventListener("pointerup", onUp);
     window.removeEventListener("pointermove", onMove);
