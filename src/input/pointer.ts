@@ -30,6 +30,10 @@ const onUp = (e: PointerEvent) => {
 };
 const onMove = (e: PointerEvent) => updatePos(e);
 const onBlur = () => down.clear();
+const onMenu = (e: MouseEvent) => {
+  down.clear();
+  e.preventDefault();
+}
 
 export function initPointer(canvas: HTMLCanvasElement): () => void {
   if (isPointerInitialized) throw new Error("initPointer: already initialized, call cleanup first");
@@ -41,6 +45,7 @@ export function initPointer(canvas: HTMLCanvasElement): () => void {
   window.addEventListener("pointerup", onUp);
   window.addEventListener("pointermove", onMove);
   window.addEventListener("blur", onBlur);
+  window.addEventListener("contextmenu", onMenu);
 
   return () => {
     isPointerInitialized = false;
@@ -54,6 +59,7 @@ export function initPointer(canvas: HTMLCanvasElement): () => void {
     window.removeEventListener("pointerup", onUp);
     window.removeEventListener("pointermove", onMove);
     window.removeEventListener("blur", onBlur);
+    window.removeEventListener("contextmenu", onMenu);
   };
 }
 
