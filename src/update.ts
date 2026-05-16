@@ -1,13 +1,24 @@
 import { clearFramePointer } from "./input/pointer.ts";
 
+interface LoopOptions {
+  tickRate?: number | "variable";
+  maxDelta?: number;
+}
+
 export function startLoop(
   update: (dt: number) => void,
   render: () => void,
-  tickRate: number | "variable" = 1/60,
+  { tickRate = 1/60, maxDelta = 0.25 }: LoopOptions = {},
 ): void {
   if (typeof tickRate === "number" && (!Number.isFinite(tickRate) || tickRate <= 0)) {
     throw new RangeError(
       `startLoop: tickRate must be "variable" or a positive finite number, got ${tickRate}`
+    )
+  }
+
+  if (!Number.isFinite(maxDelta) || maxDelta <= 0) {
+    throw new RangeError(
+      `startLoop: maxDelta must be a positive finite number, got ${maxDelta}`
     )
   }
 
@@ -16,7 +27,7 @@ export function startLoop(
 
   function frame(nowMs: number) {
     const now = nowMs / 1000;
-    const elapsed = Math.min(now - lastTime, 0.25);
+    const elapsed = Math.min(now - lastTime, maxDelta);
     lastTime = now;
 
     if (tickRate === "variable") update(elapsed);
