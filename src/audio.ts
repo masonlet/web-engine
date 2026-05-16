@@ -1,3 +1,4 @@
+let initialized = false;
 let ctx: AudioContext | null = null;
 let gain: GainNode | null = null;
 let muted = false;
@@ -5,10 +6,23 @@ let muted = false;
 type Sound = { buffer: AudioBuffer; instances: Set<AudioBufferSourceNode> };
 const sounds = new Map<string, Sound>();
 
-export function initAudio(): void {
+export function initAudio(): () => void {
+  if (initialized) throw new Error("initAudio: already initialized, call cleanup first");
+  initialized = true;
+
   ctx = new AudioContext();
   gain = ctx.createGain();
   gain.connect(ctx.destination);
+
+  return () => {
+    initialized = false;
+    for (const key of sounds.keys()) stopSound(key);
+    sounds.clear();
+    ctx?.close();
+    ctx = null;
+    gain = null;
+    muted = false;
+  }
 }
 
 export async function registerSound(key: string, path: string): Promise<void> {
