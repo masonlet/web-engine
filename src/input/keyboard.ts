@@ -1,6 +1,7 @@
 let initialized = false;
 const keys = new Set<string>();
 const pressedThisFrame = new Set<string>();
+let pressedFrame = new Set<string>();
 
 const onKeyDown = (e: KeyboardEvent) => {
   if (!keys.has(e.code)) pressedThisFrame.add(e.code);
@@ -28,5 +29,9 @@ export function initKeyboard(): () => void {
 }
 
 export function isDown(code: string): boolean     { return keys.has(code); }
-export function wasPressed(code: string): boolean { return pressedThisFrame.has(code); }
-export function clearFrameKeyboard(): void        { pressedThisFrame.clear(); }
+export function wasPressed(code: string): boolean { return pressedFrame.has(code); }
+
+export function clearFrameKeyboard(): void {
+  pressedFrame = new Set(pressedThisFrame);
+  pressedThisFrame.clear();
+}
