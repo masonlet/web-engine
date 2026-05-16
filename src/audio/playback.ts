@@ -1,4 +1,4 @@
-import { ctx, gain, sounds } from "./state.ts";
+import { ctx, gain, sounds } from "./state";
 
 export function playSound(key: string, opts: { loop?: boolean } = {}): void {
   if (!ctx || !gain) throw new Error("audio: initAudio() not called");
