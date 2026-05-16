@@ -1,10 +1,9 @@
 import { clearFramePointer } from "./input/pointer.ts";
 
-const TICK_RATE = 1 / 60;
-
 export function startLoop(
   update: (dt: number) => void,
   render: () => void,
+  tickRate: number | "variable" = 1/60,
 ): void {
   let accumulator = 0;
   let lastTime = performance.now() / 1000;
@@ -13,11 +12,14 @@ export function startLoop(
     const now = nowMs / 1000;
     const elapsed = Math.min(now - lastTime, 0.25);
     lastTime = now;
-    accumulator += elapsed;
 
-    while (accumulator >= TICK_RATE) {
-      update(TICK_RATE);
-      accumulator -= TICK_RATE;
+    if (tickRate === "variable") update(elapsed);
+    else {
+      accumulator += elapsed;
+      while(accumulator >= tickRate) {
+        update(tickRate);
+        accumulator -= tickRate;
+      }
     }
 
     render();
