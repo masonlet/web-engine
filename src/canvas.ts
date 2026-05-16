@@ -1,6 +1,7 @@
 export function createGameCanvas(): {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
+  destroy: () => void
 } {
   const canvas = document.createElement("canvas");
   document.body.appendChild(canvas);
@@ -9,12 +10,19 @@ export function createGameCanvas(): {
   if (!ctx) throw new Error("2D canvas context not found");
   ctx.imageSmoothingEnabled = false;
 
-  function resize() {
+  const onResize = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
   }
-  window.addEventListener("resize", resize);
-  resize();
+  window.addEventListener("resize", onResize);
+  onResize();
 
-  return { canvas, ctx };
+  return {
+    canvas,
+    ctx,
+    destroy: () => {
+      window.removeEventListener("resize", onResize);
+      canvas.remove();
+    }
+  };
 }
