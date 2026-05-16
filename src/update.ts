@@ -22,7 +22,7 @@ export function startLoop(
     if (tickRate === "variable") update(elapsed);
     else {
       accumulator += elapsed;
-      while(accumulator >= tickRate) {
+      while (accumulator >= tickRate) {
         update(tickRate);
         accumulator -= tickRate;
       }
