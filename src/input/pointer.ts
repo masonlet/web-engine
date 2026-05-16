@@ -2,6 +2,8 @@ let initialized = false;
 const down = new Set<number>();
 const clicked = new Set<number>();
 const released = new Set<number>();
+let clickedFrame = new Set<number>();
+let releasedFrame = new Set<number>();
 
 let canvasRef: HTMLCanvasElement | null = null;
 let posX = 0;
@@ -54,12 +56,14 @@ export function initPointer(canvas: HTMLCanvasElement): () => void {
 }
 
 export function isPointerDown(button = 0): boolean      { return down.has(button); }
-export function wasPointerClicked(button = 0): boolean  { return clicked.has(button); }
-export function wasPointerReleased(button = 0): boolean { return released.has(button); }
+export function wasPointerClicked(button = 0): boolean  { return clickedFrame.has(button); }
+export function wasPointerReleased(button = 0): boolean { return releasedFrame.has(button); }
 export function pointerX(): number { return posX; }
 export function pointerY(): number { return posY; }
 
 export function clearFramePointer(): void {
+  clickedFrame = new Set(clicked);
+  releasedFrame = new Set(released);
   clicked.clear();
   released.clear();
 }
