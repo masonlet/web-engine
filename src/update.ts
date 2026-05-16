@@ -5,6 +5,12 @@ export function startLoop(
   render: () => void,
   tickRate: number | "variable" = 1/60,
 ): void {
+  if (typeof tickRate === "number" && (!Number.isFinite(tickRate) || tickRate <= 0)) {
+    throw new RangeError(
+      `startLoop: tickRate must be "variable" or a positive finite number, got ${tickRate}`
+    )
+  }
+
   let accumulator = 0;
   let lastTime = performance.now() / 1000;
 
