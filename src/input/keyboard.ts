@@ -8,7 +8,7 @@ const onKeyDown = (e: KeyboardEvent) => {
   keys.add(e.code);
 };
 const onKeyUp = (e: KeyboardEvent) => { keys.delete(e.code); };
-const onBlur = () => keys.clear();
+const onBlur = () => { keys.clear(); pressedThisFrame.clear(); };
 
 export function initKeyboard(): () => void {
   if (isKeyboardInitialized) throw new Error("initKeyboard: already initialized, call cleanup first");
