@@ -9,7 +9,7 @@ export function startLoop(
   update: (dt: number) => void,
   render: () => void,
   { tickRate = 1/60, maxDelta = 0.25 }: LoopOptions = {},
-): void {
+): { stop: () => void } {
   if (typeof tickRate === "number" && (!Number.isFinite(tickRate) || tickRate <= 0)) {
     throw new RangeError(
       `startLoop: tickRate must be "variable" or a positive finite number, got ${tickRate}`
@@ -22,6 +22,7 @@ export function startLoop(
     )
   }
 
+  let reqId: number | null = null;
   let accumulator = 0;
   let lastTime = performance.now() / 1000;
 
@@ -41,7 +42,14 @@ export function startLoop(
 
     render();
     clearFramePointer();
-    requestAnimationFrame(frame);
+    reqId = requestAnimationFrame(frame);
   }
-  requestAnimationFrame(frame);
+  reqId = requestAnimationFrame(frame);
+
+  return { stop: () => {
+    if (reqId !== null) {
+      cancelAnimationFrame(reqId);
+      reqId = null;
+    }
+  } };
 }
