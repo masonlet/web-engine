@@ -6,6 +6,10 @@ export async function registerSound(key: string, path: string): Promise<void> {
 
   const url = `${import.meta.env.BASE_URL}${path}`;
   const res = await fetch(url);
+  if (!res.ok) throw new Error(
+    `audio: failed to load "${key}" from "${path}" (${res.status} ${res.statusText})`
+  );
+
   const arr = await res.arrayBuffer();
   const buffer = await ctx.decodeAudioData(arr);
 
