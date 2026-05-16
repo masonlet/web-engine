@@ -1,7 +1,9 @@
-let initialized = false;
+let isPointerInitialized = false;
 const down = new Set<number>();
 const clicked = new Set<number>();
 const released = new Set<number>();
+let clickedFrame = new Set<number>();
+let releasedFrame = new Set<number>();
 
 let canvasRef: HTMLCanvasElement | null = null;
 let posX = 0;
@@ -28,10 +30,14 @@ const onUp = (e: PointerEvent) => {
 };
 const onMove = (e: PointerEvent) => updatePos(e);
 const onBlur = () => down.clear();
+const onMenu = (e: MouseEvent) => {
+  down.clear();
+  e.preventDefault();
+}
 
 export function initPointer(canvas: HTMLCanvasElement): () => void {
-  if (initialized) throw new Error("initPointer: already initialized, call cleanup first");
-  initialized = true;
+  if (isPointerInitialized) throw new Error("initPointer: already initialized, call cleanup first");
+  isPointerInitialized = true;
 
   canvasRef = canvas;
 
@@ -39,27 +45,33 @@ export function initPointer(canvas: HTMLCanvasElement): () => void {
   window.addEventListener("pointerup", onUp);
   window.addEventListener("pointermove", onMove);
   window.addEventListener("blur", onBlur);
+  window.addEventListener("contextmenu", onMenu);
 
   return () => {
-    initialized = false;
+    isPointerInitialized = false;
     canvasRef = null;
     down.clear();
     clicked.clear();
     released.clear();
+    clickedFrame.clear();
+    releasedFrame.clear();
     window.removeEventListener("pointerdown", onDown);
     window.removeEventListener("pointerup", onUp);
     window.removeEventListener("pointermove", onMove);
     window.removeEventListener("blur", onBlur);
+    window.removeEventListener("contextmenu", onMenu);
   };
 }
 
 export function isPointerDown(button = 0): boolean      { return down.has(button); }
-export function wasPointerClicked(button = 0): boolean  { return clicked.has(button); }
-export function wasPointerReleased(button = 0): boolean { return released.has(button); }
+export function wasPointerClicked(button = 0): boolean  { return clickedFrame.has(button); }
+export function wasPointerReleased(button = 0): boolean { return releasedFrame.has(button); }
 export function pointerX(): number { return posX; }
 export function pointerY(): number { return posY; }
 
 export function clearFramePointer(): void {
+  clickedFrame = new Set(clicked);
+  releasedFrame = new Set(released);
   clicked.clear();
   released.clear();
 }

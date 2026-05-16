@@ -1,4 +1,5 @@
 import { clearFramePointer } from "./input/pointer.ts";
+import { clearFrameKeyboard } from "./input/keyboard.ts";
 
 interface LoopOptions {
   tickRate?: number | "variable";
@@ -27,6 +28,9 @@ export function startLoop(
   let lastTime = performance.now() / 1000;
 
   function frame(nowMs: number) {
+    clearFrameKeyboard();
+    clearFramePointer();
+
     const now = nowMs / 1000;
     const elapsed = Math.min(now - lastTime, maxDelta);
     lastTime = now;
@@ -41,7 +45,6 @@ export function startLoop(
     }
 
     render();
-    clearFramePointer();
     reqId = requestAnimationFrame(frame);
   }
   reqId = requestAnimationFrame(frame);
