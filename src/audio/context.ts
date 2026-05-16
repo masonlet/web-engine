@@ -17,3 +17,17 @@ export function initAudio(): () => void {
     setState({ ctx: null, gain: null, muted: false, initialized: false });
   };
 }
+
+export function resumeAudio(): Promise<void> {
+  if (!ctx) throw new Error("audio: initAudio() not called");
+  return ctx.resume();
+}
+
+export function audioState(): AudioContextState {
+  if (!ctx) throw new Error("audio: initAudio() not called");
+  return ctx.state;
+}
+
+export function isAudioInitialized(): boolean {
+  return initialized;
+}
