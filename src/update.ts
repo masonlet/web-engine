@@ -1,4 +1,5 @@
 import { clearFramePointer } from "./input/pointer.ts";
+import { clearFrameKeyboard } from "./input/keyboard.ts";
 
 interface LoopOptions {
   tickRate?: number | "variable";
@@ -41,6 +42,7 @@ export function startLoop(
     }
 
     render();
+    clearFrameKeyboard();
     clearFramePointer();
     reqId = requestAnimationFrame(frame);
   }
