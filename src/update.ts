@@ -47,11 +47,11 @@ export function startLoop(
     const elapsed = Math.min(nowMs - lastTime, maxDelta);
     lastTime = nowMs;
 
-    if (tickRate === "variable") update(elapsed * 1000);
+    if (tickRate === "variable") update(elapsed);
     else {
       accumulator += elapsed;
       while (accumulator >= tickRate) {
-        update(tickRate * 1000);
+        update(tickRate);
         accumulator -= tickRate;
       }
     }
