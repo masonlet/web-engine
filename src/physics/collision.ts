@@ -16,7 +16,7 @@ export function obbVsAabb(obb: OBB, aabb: AABB): MTV | null {
   let minDepth = Infinity;
   let minAxis: Vec2 = { x: 0, y: 0 };
 
- for (const axis of axes) {
+  for (const axis of axes) {
     const [aMin, aMax] = project(obbCs, axis);
     const [bMin, bMax] = project(aabbCs, axis);
     const overlap = Math.min(aMax, bMax) - Math.max(aMin, bMin);

@@ -1,5 +1,5 @@
-import { initialized, ctx, sounds, setState } from "./state";
-import { stopSound } from "./playback";
+import { initialized, ctx, sounds, setState } from "./state.ts";
+import { stopSound } from "./playback.ts";
 
 export function initAudio(): () => void {
   if (initialized) throw new Error("initAudio: already initialized, call cleanup first");
@@ -10,7 +10,18 @@ export function initAudio(): () => void {
 
   setState({ ctx: newCtx, gain: newGain, initialized: true });
 
+  const unlock = () => {
+    if (newCtx.state === "suspended") newCtx.resume();
+    window.removeEventListener("pointerdown", unlock);
+    window.removeEventListener("keydown", unlock);
+  };
+
+  window.addEventListener("pointerdown", unlock);
+  window.addEventListener("keydown", unlock);
+
   return () => {
+    window.removeEventListener("pointerdown", unlock);
+    window.removeEventListener("keydown", unlock);
     for (const key of sounds.keys()) stopSound(key);
     sounds.clear();
     ctx?.close();

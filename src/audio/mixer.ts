@@ -12,7 +12,7 @@ export function getVolume(): number { return volume; }
 export function setMuted(value: boolean): void {
   if (!gain) throw new Error("audio: initAudio() not called");
   gain.gain.value = value ? 0 : volume;
-  setState({muted: value})
+  setState({ muted: value });
 }
 
 export function isMuted(): boolean {
