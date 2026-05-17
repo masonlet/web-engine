@@ -8,7 +8,7 @@ export function createBody(params: {
   mass: number;
   angle?: number;
 }): PhysicsBody {
- return {
+  return {
     position: { x: params.x, y: params.y },
     velocity: { x: 0, y: 0 },
     angle: params.angle ?? 0,
