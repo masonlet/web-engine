@@ -1,5 +1,5 @@
-import { initialized, ctx, sounds, setState } from "./state";
-import { stopSound } from "./playback";
+import { initialized, ctx, sounds, setState } from "./state.ts";
+import { stopSound } from "./playback.ts";
 
 export function initAudio(): () => void {
   if (initialized) throw new Error("initAudio: already initialized, call cleanup first");

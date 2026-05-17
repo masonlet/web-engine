@@ -1,4 +1,4 @@
-import { ctx, sounds } from "./state";
+import { ctx, sounds } from "./state.ts";
 
 export async function registerSound(
   key: string, path: string, baseUrl = "/"

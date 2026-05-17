@@ -1,4 +1,4 @@
-import type { Sound } from "./types";
+import type { Sound } from "./types.ts";
 
 export let   ctx:         AudioContext | null = null;
 export let   gain:        GainNode     | null = null;
