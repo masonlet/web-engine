@@ -44,8 +44,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "checkJs": false,
-    "noEmit": true,
-    "types": ["vite/client"]
+    "noEmit": true
   },
   "include": ["./src/**/*.ts"],
   "exclude": ["dist/", "node_modules/"]
