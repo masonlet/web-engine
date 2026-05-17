@@ -8,6 +8,7 @@ type ResolvedProp   = {
 type ResolvedTarget = {
   readonly obj: TweenTarget;
   readonly props: Partial<Record<keyof TweenTarget, ResolvedProp>>
+  readonly keys: readonly (keyof TweenTarget)[];
 };
 
 interface ActiveTween {
@@ -42,13 +43,15 @@ export function createTweenManager() {
 
     const resolvedTargets: ResolvedTarget[] = targetArray.map(obj => {
       const props: Partial<Record<keyof TweenTarget, ResolvedProp>> = {};
+      const keys: (keyof TweenTarget)[] = [];
       for (const [key, val] of Object.entries(config.props) as
              [keyof TweenTarget, typeof config.props[keyof TweenTarget]][]
       ) {
         if (val === undefined) continue;
         props[key] = typeof val === 'number' ? { from: obj[key] ?? 0, to: val } : val;
+        keys.push(key);
       }
-      return { obj, props };
+      return { obj, props, keys };
     });
 
     const tween: ActiveTween = {
@@ -103,9 +106,12 @@ export function createTweenManager() {
       }
 
       if (tween.duration <= 0) {
-        for (const { obj, props } of tween.targets)
-          for (const [key, resolved] of Object.entries(props) as [keyof TweenTarget, ResolvedProp][])
-            obj[key] = resolved.to;
+        for (const { obj, props, keys } of tween.targets) {
+          for (const key of keys) {
+            const resolved = props[key];
+            if (resolved) obj[key] = resolved.to;
+          }
+        }
 
         tween.onUpdate?.(1);
         tween.onComplete?.();
@@ -121,9 +127,12 @@ export function createTweenManager() {
         const raw = tween.elapsed / tween.duration;
         const t   = tween.direction === 1 ? tween.ease(raw) : tween.ease(1 - raw);
 
-        for (const { obj, props } of tween.targets)
-          for (const [key, resolved] of Object.entries(props) as [keyof TweenTarget, ResolvedProp][])
-            obj[key] = resolved.from + (resolved.to - resolved.from) * t;
+        for (const { obj, props, keys } of tween.targets) {
+          for (const key of keys) {
+            const resolved = props[key];
+            if (resolved) obj[key] = resolved.from + (resolved.to - resolved.from) * t;
+          }
+        }
 
         tween.onUpdate?.(t);
 
