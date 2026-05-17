@@ -9,6 +9,12 @@ let canvasRef: HTMLCanvasElement | null = null;
 let posX = 0;
 let posY = 0;
 
+function clearDown(): void {
+  down.clear();
+  clicked.clear();
+  released.clear();
+}
+
 const updatePos = (e: PointerEvent) => {
   if (!canvasRef) return;
   const rect = canvasRef.getBoundingClientRect();
@@ -29,13 +35,9 @@ const onUp = (e: PointerEvent) => {
   released.add(e.button);
 };
 const onMove = (e: PointerEvent) => updatePos(e);
-const onBlur = () => {
-  down.clear();
-  clicked.clear();
-  released.clear();
-};
+const onBlur = () => clearDown();
 const onMenu = (e: MouseEvent) => {
-  down.clear();
+  clearDown();
   e.preventDefault();
 }
 
@@ -54,9 +56,7 @@ export function initPointer(canvas: HTMLCanvasElement): () => void {
   return () => {
     isPointerInitialized = false;
     canvasRef = null;
-    down.clear();
-    clicked.clear();
-    released.clear();
+    clearDown();
     flushPointer();
     window.removeEventListener("pointerdown", onDown);
     window.removeEventListener("pointerup", onUp);
