@@ -17,8 +17,8 @@ export const easeInOut = (f: EasingFunction): EasingFunction =>
   t => t < 0.5 ? f(2*t) / 2 : 1 - f(-2 * t + 2) / 2;
 
 /** Generates in/out/inOut easing functions for a given exponent. */
-export const makePowerEase = (exp: number) => {
-  const i: EasingFunction = t => t ** exp;
+export const makePowerEase = (exponent: number) => {
+  const i: EasingFunction = t => t ** exponent;
   return { in: i, out: easeOut(i), inOut: easeInOut(i) };
 };
 
@@ -35,11 +35,11 @@ const quad = makePowerEase(2);
 const cubic = makePowerEase(3);
 
 /** Exponential ease-in with edge case guards. */
-const expo: EasingFunction = t => t === 0 ? 0 : t === 1 ? 1 : 2 ** (10 * t - 10);
+const expoIn: EasingFunction = t => t === 0 ? 0 : t === 1 ? 1 : 2 ** (10 * t - 10);
 /** Exponential ease-out. */
-const expoOut:   EasingFunction = easeOut(expo);
+const expoOut:   EasingFunction = easeOut(expoIn);
 /** Exponential ease-in-out. */
-const expoInOut: EasingFunction = easeInOut(expo);
+const expoInOut: EasingFunction = easeInOut(expoIn);
 
 /** Lookup table of easing functions keyed by name. */
 export const TWEEN_EASING: Readonly<Record<EasingName, EasingFunction>> = {
@@ -61,7 +61,7 @@ export const TWEEN_EASING: Readonly<Record<EasingName, EasingFunction>> = {
   'cubic.inOut': cubic.inOut,
 
   // Exponential
-  'expo.in':     expo,
+  'expo.in':     expoIn,
   'expo.out':    expoOut,
   'expo.inOut':  expoInOut,
 }
