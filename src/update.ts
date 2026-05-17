@@ -9,7 +9,7 @@ interface LoopOptions {
 export function startLoop(
   update: (dt: number) => void,
   render: () => void,
-  { tickRate = 1/60, maxDelta = 0.25 }: LoopOptions = {},
+  { tickRate = 1000/60, maxDelta = 250 }: LoopOptions = {},
 ): { stop: () => void } {
   if (typeof tickRate === "number" && (!Number.isFinite(tickRate) || tickRate <= 0)) {
     throw new RangeError(
@@ -35,11 +35,11 @@ export function startLoop(
     const elapsed = Math.min(now - lastTime, maxDelta);
     lastTime = now;
 
-    if (tickRate === "variable") update(elapsed);
+    if (tickRate === "variable") update(elapsed * 1000);
     else {
       accumulator += elapsed;
       while (accumulator >= tickRate) {
-        update(tickRate);
+        update(tickRate * 1000);
         accumulator -= tickRate;
       }
     }
