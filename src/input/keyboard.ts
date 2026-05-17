@@ -22,7 +22,7 @@ export function initKeyboard(): () => void {
     isKeyboardInitialized = false;
     keys.clear();
     pressedThisFrame.clear();
-    pressedFrame.clear();
+    flushKeyboard();
     window.removeEventListener("keydown", onKeyDown);
     window.removeEventListener("keyup", onKeyUp);
     window.removeEventListener("blur", onBlur);
@@ -35,4 +35,8 @@ export function wasPressed(code: string): boolean { return pressedFrame.has(code
 export function clearFrameKeyboard(): void {
   pressedFrame = new Set(pressedThisFrame);
   pressedThisFrame.clear();
+}
+
+export function flushKeyboard(): void {
+  pressedFrame.clear();
 }
