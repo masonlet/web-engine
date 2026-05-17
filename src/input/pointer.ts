@@ -18,6 +18,7 @@ function clearDown(): void {
 const updatePos = (e: PointerEvent) => {
   if (!canvasRef) return;
   const rect = canvasRef.getBoundingClientRect();
+  if (rect.width === 0 || rect.height === 0) return;
   const scaleX = canvasRef.width / rect.width;
   const scaleY = canvasRef.height / rect.height;
   posX = (e.clientX - rect.left) * scaleX;
