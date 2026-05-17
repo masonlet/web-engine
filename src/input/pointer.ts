@@ -53,8 +53,7 @@ export function initPointer(canvas: HTMLCanvasElement): () => void {
     down.clear();
     clicked.clear();
     released.clear();
-    clickedFrame.clear();
-    releasedFrame.clear();
+    flushPointer();
     window.removeEventListener("pointerdown", onDown);
     window.removeEventListener("pointerup", onUp);
     window.removeEventListener("pointermove", onMove);
@@ -74,4 +73,9 @@ export function clearFramePointer(): void {
   releasedFrame = new Set(released);
   clicked.clear();
   released.clear();
+}
+
+export function flushPointer(): void {
+  clickedFrame.clear();
+  releasedFrame.clear();
 }
