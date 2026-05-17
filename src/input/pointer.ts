@@ -29,7 +29,11 @@ const onUp = (e: PointerEvent) => {
   released.add(e.button);
 };
 const onMove = (e: PointerEvent) => updatePos(e);
-const onBlur = () => down.clear();
+const onBlur = () => {
+  down.clear();
+  clicked.clear();
+  released.clear();
+};
 const onMenu = (e: MouseEvent) => {
   down.clear();
   e.preventDefault();
