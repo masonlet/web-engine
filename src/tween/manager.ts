@@ -75,10 +75,10 @@ export function createTweenManager() {
     tweens.add(tween);
 
     return {
-      stop:     () => { tween.stopped = true; tweens.delete(tween); },
-      pause:    () => { tween.paused = true; },
-      resume:   () => { tween.paused = false; },
-      get isPlaying() { return !tween.paused && !tween.stopped; },
+      stop:     () => { if (!tween.stopped) { tween.stopped = true; tweens.delete(tween); } },
+      pause:    () => { if (!tween.stopped) tween.paused = true;  },
+      resume:   () => { if (!tween.stopped) tween.paused = false; },
+      get isPlaying() { return !tween.paused && !tween.stopped;   },
     };
   }
 
