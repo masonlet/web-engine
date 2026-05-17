@@ -1,9 +1,4 @@
-/** Easing function name. */
-export type TweenEaseName = 'linear'
-                          | 'sine.in'   | 'sine.out'   | 'sine.inOut'
-                          | 'quad.in'   | 'quad.out'   | 'quad.inOut'
-                          | 'cubic.in'  | 'cubic.out'  | 'cubic.inOut'
-                          | 'expo.in'   | 'expo.out'   | 'expo.inOut';
+import { type EasingName } from "./easing.ts";
 
 /** An object whose properties can be animated by the tween system. */
 export type TweenTarget = {
@@ -31,7 +26,7 @@ export interface TweenConfig {
   delay?: number;
 
   /** Easing function. Default: 'linear'. */
-  ease?: TweenEaseName;
+  ease?: EasingName;
   /** Reverse the animation at the end of each pass. Default: false. */
   yoyo?: boolean;
   /**
