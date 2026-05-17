@@ -20,6 +20,6 @@ export function stopSound(key: string): void {
   const sound = sounds.get(key);
   if (!sound) return;
 
-  for (const src of sound.instances) src.stop();
+  for (const src of sound.instances) try { src.stop(); } catch { /* Already stopped */}
   sound.instances.clear();
 }
