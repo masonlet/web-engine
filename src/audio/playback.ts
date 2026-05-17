@@ -20,6 +20,12 @@ export function stopSound(key: string): void {
   const sound = sounds.get(key);
   if (!sound) return;
 
-  for (const src of sound.instances) try { src.stop(); } catch { /* Already stopped */}
+  for (const src of sound.instances) {
+    try {
+      src.stop();
+    } catch (e) {
+      if (!(e instanceof DOMException) || e.name !== "InvalidStateError") throw e;
+    }
+  }
   sound.instances.clear();
 }
