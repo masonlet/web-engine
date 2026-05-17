@@ -1,0 +1,170 @@
+import { type EasingFunction, TWEEN_EASING } from "./easing.ts";
+import type { TweenConfig, TweenHandle, TweenTarget } from "./types.ts";
+
+type ResolvedProp   = {
+  readonly from: number;
+  readonly to: number
+};
+type ResolvedTarget = {
+  readonly obj: TweenTarget;
+  readonly props: Partial<Record<keyof TweenTarget, ResolvedProp>>
+};
+
+interface ActiveTween {
+  readonly targets:  readonly ResolvedTarget[];
+  readonly duration: number;
+  readonly delay:    number;
+  readonly ease:     EasingFunction;
+  readonly yoyo:     boolean;
+  readonly repeat:   number;
+
+  elapsed:      number;
+  delayElapsed: number;
+  direction:    1 | -1;
+  repeatsDone:  number;
+  started:      boolean;
+  paused:       boolean;
+  stopped:      boolean;
+
+  readonly onStart:    (() => void)                 | undefined;
+  readonly onUpdate:   ((progress: number) => void )| undefined;
+  readonly onComplete: (() => void)                 | undefined;
+  readonly onYoyo:     (() => void)                 | undefined;
+  readonly onRepeat:   (() => void)                 | undefined;
+}
+
+export function createTweenManager() {
+  const tweens = new Set<ActiveTween>();
+
+  function add(config: TweenConfig): TweenHandle {
+    const targetArray = Array.isArray(config.targets) ? [...config.targets] : [config.targets];
+    const easeFn = TWEEN_EASING[config.ease ?? 'linear'];
+
+    const resolvedTargets: ResolvedTarget[] = targetArray.map(obj => {
+      const props: Partial<Record<keyof TweenTarget, ResolvedProp>> = {};
+      for (const [key, val] of Object.entries(config.props) as
+             [keyof TweenTarget, typeof config.props[keyof TweenTarget]][]
+      ) {
+        if (val === undefined) continue;
+        props[key] = typeof val === 'number' ? { from: obj[key] ?? 0, to: val } : val;
+      }
+      return { obj, props };
+    });
+
+    const tween: ActiveTween = {
+      targets:      resolvedTargets,
+      duration:     config.duration,
+      ease:         easeFn,
+      yoyo:         config.yoyo   ?? false,
+      repeat:       config.repeat ?? 0,
+      delay:        config.delay  ?? 0,
+      elapsed:      0,
+      delayElapsed: 0,
+      direction:    1,
+      repeatsDone:  0,
+      started:      false,
+      paused:       false,
+      stopped:      false,
+      onStart:      config.onStart,
+      onUpdate:     config.onUpdate,
+      onComplete:   config.onComplete,
+      onYoyo:       config.onYoyo,
+      onRepeat:     config.onRepeat,
+    };
+
+    tweens.add(tween);
+
+    return {
+      stop:     () => { tween.stopped = true; tweens.delete(tween); },
+      pause:    () => { tween.paused = true; },
+      resume:   () => { tween.paused = false; },
+      get isPlaying() { return !tween.paused && !tween.stopped; },
+    };
+  }
+
+  function update(deltaMs: number): void {
+    for (const tween of [...tweens]) {
+      if (tween.paused || tween.stopped) continue;
+
+      let step = deltaMs;
+      if (tween.delayElapsed < tween.delay) {
+        const remaining = tween.delay - tween.delayElapsed;
+        if (step <= remaining) {
+          tween.delayElapsed += step;
+          continue;
+        }
+        tween.delayElapsed = tween.delay;
+        step -= remaining;
+      }
+
+      if (!tween.started) {
+        tween.started = true;
+        tween.onStart?.();
+      }
+
+      if (tween.duration <= 0) {
+        for (const { obj, props } of tween.targets)
+          for (const [key, resolved] of Object.entries(props) as [keyof TweenTarget, ResolvedProp][])
+            obj[key] = resolved.to;
+
+        tween.onUpdate?.(1);
+        tween.onComplete?.();
+        tweens.delete(tween);
+        continue;
+      }
+
+      while (step > 0 && !tween.stopped) {
+        const next = tween.elapsed + step;
+        const overflow = Math.max(0, next - tween.duration);
+        tween.elapsed = Math.min(next, tween.duration);
+
+        const raw = tween.elapsed / tween.duration;
+        const t   = tween.direction === 1 ? tween.ease(raw) : tween.ease(1 - raw);
+
+        for (const { obj, props } of tween.targets)
+          for (const [key, resolved] of Object.entries(props) as [keyof TweenTarget, ResolvedProp][])
+            obj[key] = resolved.from + (resolved.to - resolved.from) * t;
+
+        tween.onUpdate?.(t);
+
+        if (tween.elapsed >= tween.duration) {
+          if (tween.yoyo) {
+            if (tween.direction === 1) {
+              tween.direction = -1;
+              tween.onYoyo?.();
+            } else {
+              tween.direction = 1;
+              if (tween.repeat === -1 || tween.repeatsDone < tween.repeat) {
+                tween.repeatsDone++;
+                tween.onRepeat?.();
+              } else {
+                tween.onComplete?.();
+                tweens.delete(tween);
+                break;
+              }
+            }
+          } else {
+            if (tween.repeat === -1 || tween.repeatsDone < tween.repeat) {
+              tween.repeatsDone++;
+              tween.onRepeat?.();
+            } else {
+              tween.onComplete?.();
+              tweens.delete(tween);
+              break;
+            }
+          }
+          tween.elapsed = overflow;
+          step = overflow;
+        } else {
+          step = 0;
+        }
+      }
+    }
+  }
+
+  function stopAll(): void {
+    tweens.clear();
+  }
+
+  return { add, update, stopAll };
+}
