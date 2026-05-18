@@ -6,11 +6,17 @@ interface LoopOptions {
   maxDelta?: number;
 }
 
+export interface LoopHandle {
+  stop():   void;
+  pause():  void;
+  resume(): void;
+}
+
 export function startLoop(
   update: (dt: number) => void,
   render: () => void,
   { tickRate = 1000/60, maxDelta = 250 }: LoopOptions = {},
-): { stop: () => void } {
+): LoopHandle {
   if (typeof tickRate === "number" && (!Number.isFinite(tickRate) || tickRate <= 0)) {
     throw new RangeError(
       `startLoop: tickRate must be "variable" or a positive finite number, got ${tickRate}`
@@ -25,15 +31,21 @@ export function startLoop(
 
   let reqId: number | null = null;
   let accumulator = 0;
-  let lastTime = performance.now() / 1000;
+  let lastTime    = performance.now();
+  let paused      = false;
 
   function frame(nowMs: number) {
+    if (paused) {
+      lastTime = nowMs;
+      reqId = requestAnimationFrame(frame);
+      return;
+    }
+
     clearFrameKeyboard();
     clearFramePointer();
 
-    const now = nowMs / 1000;
-    const elapsed = Math.min(now - lastTime, maxDelta);
-    lastTime = now;
+    const elapsed = Math.min(nowMs - lastTime, maxDelta);
+    lastTime = nowMs;
 
     if (tickRate === "variable") update(elapsed);
     else {
@@ -49,10 +61,9 @@ export function startLoop(
   }
   reqId = requestAnimationFrame(frame);
 
-  return { stop: () => {
-    if (reqId !== null) {
-      cancelAnimationFrame(reqId);
-      reqId = null;
-    }
-  } };
+  return {
+    stop:   () => { if (reqId !== null) { cancelAnimationFrame(reqId); reqId = null; } },
+    pause:  () => { paused = true; },
+    resume: () => { paused = false; },
+  };
 }
