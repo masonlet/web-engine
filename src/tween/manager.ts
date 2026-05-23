@@ -1,5 +1,5 @@
 import { type EasingFunction, TWEEN_EASING } from "./easing.ts";
-import type { TweenConfig, TweenHandle, TweenTarget } from "./types.ts";
+import type { TweenConfig, TweenHandle, TweenTarget, TweenManager } from "./types.ts";
 
 type ResolvedProp   = {
   readonly from: number;
@@ -34,7 +34,7 @@ interface ActiveTween {
   readonly onRepeat:   (() => void)                 | undefined;
 }
 
-export function createTweenManager() {
+export function createTweenManager(): TweenManager {
   const tweens = new Set<ActiveTween>();
 
   function add(config: TweenConfig): TweenHandle {

@@ -10,7 +10,6 @@ export type TweenTargets = TweenTarget | readonly TweenTarget[];
 
 /** A target value: number (tweens from current) or explicit from/to. */
 export type TweenPropValue = number | { from: number; to: number };
-
 /** Map of supported property names to target values. */
 export type TweenProps = Partial<Record<keyof TweenTarget, TweenPropValue>>;
 
@@ -56,4 +55,10 @@ export interface TweenHandle {
   /** Resume a paused tween. */
   resume(): void;
   readonly isPlaying: boolean;
+}
+
+export interface TweenManager {
+  add(config: TweenConfig): TweenHandle;
+  update(deltaMs: number): void;
+  stopAll(): void;
 }
