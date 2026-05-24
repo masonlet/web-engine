@@ -2,8 +2,8 @@ import { clearFramePointer } from "./input/pointer.ts";
 import { clearFrameKeyboard } from "./input/keyboard.ts";
 
 interface LoopOptions {
-  tickRate?: number | "variable";
-  maxDelta?: number;
+  tickRate: number | "variable";
+  maxDelta: number;
 }
 
 export interface LoopHandle {
@@ -15,14 +15,14 @@ export interface LoopHandle {
 export function startLoop(
   update: (dt: number) => void,
   render: () => void,
-  { tickRate = 1000/60, maxDelta = 250 }: LoopOptions = {},
+  options: LoopOptions,
 ): LoopHandle {
+  const { tickRate, maxDelta } = options;
   if (typeof tickRate === "number" && (!Number.isFinite(tickRate) || tickRate <= 0)) {
     throw new RangeError(
       `startLoop: tickRate must be "variable" or a positive finite number, got ${tickRate}`
     )
   }
-
   if (!Number.isFinite(maxDelta) || maxDelta <= 0) {
     throw new RangeError(
       `startLoop: maxDelta must be a positive finite number, got ${maxDelta}`
