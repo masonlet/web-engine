@@ -1,4 +1,8 @@
-export function createGameCanvas(): {
+export interface CanvasOptions {
+  imageSmoothing?: boolean;
+}
+
+export function createGameCanvas({ imageSmoothing = true }: CanvasOptions = {}): {
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
   destroy: () => void
@@ -8,7 +12,7 @@ export function createGameCanvas(): {
 
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("2D canvas context not found");
-  ctx.imageSmoothingEnabled = false;
+  ctx.imageSmoothingEnabled = imageSmoothing;
 
   const onResize = () => {
     canvas.width = window.innerWidth;
