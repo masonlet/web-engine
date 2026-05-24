@@ -1,6 +1,9 @@
 import type { Vec2, OBB, AABB, MTV } from "./types.ts";
 import { obbCorners, aabbCorners, project } from "./geometry.ts";
 
+/** Tests an OBB against an AABB using the Separating Axis Theorem.
+ * @returns The {@link MTV} to resolve the collision, or `null` if no overlap.
+ */
 export function obbVsAabb(obb: OBB, aabb: AABB): MTV | null {
   const cos = Math.cos(obb.angle);
   const sin = Math.sin(obb.angle);
@@ -33,6 +36,9 @@ export function obbVsAabb(obb: OBB, aabb: AABB): MTV | null {
   return { axis: minAxis, depth: minDepth };
 }
 
+/** Tests two OBBs against each other using the Separating Axis Theorem.
+ * @returns The {@link MTV} to resolve the collision, or `null` if no overlap.
+ */
 export function obbVsObb(a: OBB, b: OBB): MTV | null {
   const aCos = Math.cos(a.angle), aSin = Math.sin(a.angle);
   const bCos = Math.cos(b.angle), bSin = Math.sin(b.angle);

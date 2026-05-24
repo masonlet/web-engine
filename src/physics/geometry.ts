@@ -1,5 +1,6 @@
 import type { Vec2, OBB, AABB } from "./types.ts";
 
+/** Returns the four world-space corner vertices of an {@link OBB}. */
 export function obbCorners(o: OBB): Vec2[] {
   const cos = Math.cos(o.angle);
   const sin = Math.sin(o.angle);
@@ -13,6 +14,7 @@ export function obbCorners(o: OBB): Vec2[] {
   ];
 }
 
+/** Returns the four world-space corner vertices of an {@link AABB}. */
 export function aabbCorners(a: AABB): Vec2[] {
   return [
     { x: a.x,         y: a.y },
@@ -22,6 +24,7 @@ export function aabbCorners(a: AABB): Vec2[] {
   ];
 }
 
+/** Projects a set of vertices onto an axis and returns `[min, max]`. */
 export function project(corners: Vec2[], axis: Vec2): [number, number] {
   let min = Infinity, max = -Infinity;
   for (const c of corners) {
