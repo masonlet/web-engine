@@ -3,15 +3,9 @@ import { clearFrameKeyboard } from "./input/keyboard.ts";
 
 /** Options for configuring the game loop. */
 interface LoopOptions {
-  /**
-   * Fixed timestep in **ms**, or "variable" for frame-rate dependent updates.
-   * @default 1000/60
-   */
+  /** Fixed timestep in **ms**, or "variable" for frame-rate dependent updates. */
   tickRate: number | "variable";
-  /**
-   * Maximum elapsed time per frame in **ms**.
-   * @default 250
-   */
+  /** Maximum elapsed time per frame in **ms**. */
   maxDelta: number;
 }
 
