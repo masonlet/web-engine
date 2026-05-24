@@ -1,6 +1,11 @@
 /** Represents a registered sound with its decoded buffer and active playback instances. */
 export type Sound = { buffer: AudioBuffer; instances: Set<AudioBufferSourceNode> };
 
+/** Options for {@link Audio.playSound}. */
+export type PlaySoundOptions = {
+  loop?: boolean
+};
+
 /** Manages Web Audio API playback, volume, and sound registration.
  *
  * Must be initialized with {@link Audio.init} before any other methods are called.
@@ -27,7 +32,7 @@ export class Audio {
    * @throws {Error} If not initialized.
    */
   get state():       AudioContextState {
-    if (!this.ctx) throw new Error("AudioSystem: not initialized");
+    if (!this.ctx) throw new Error("Audio: not initialized");
     return this.ctx.state;
   }
 
@@ -40,7 +45,7 @@ export class Audio {
    * @throws {Error} If already initialized.
    */
   init(): () => void {
-    if (this._initialized) throw new Error("AudioSystem: already initialized");
+    if (this._initialized) throw new Error("Audio: already initialized");
 
     this.ctx  = new AudioContext();
     this.gain = this.ctx.createGain();
@@ -72,7 +77,7 @@ export class Audio {
    * @throws {Error} If not initialized.
    */
   resume(): Promise<void> {
-    if (!this.ctx) throw new Error("AudioSystem: not initialized");
+    if (!this.ctx) throw new Error("Audio: not initialized");
     return this.ctx.resume();
   }
 
@@ -81,7 +86,7 @@ export class Audio {
    * @throws {Error} If not initialized.
    */
   setVolume(value: number): void {
-    if (!this.gain) throw new Error("AudioSystem: not initialized");
+    if (!this.gain) throw new Error("Audio: not initialized");
     this._volume = Math.max(0, Math.min(1, value));
     if (!this._muted) this.gain.gain.value = this._volume;
   }
@@ -91,7 +96,7 @@ export class Audio {
    * @param value - Mute (true), or unmute (false).
    */
   setMuted(value: boolean): void {
-    if (!this.gain) throw new Error("AudioSystem: not initialized");
+    if (!this.gain) throw new Error("Audio: not initialized");
     this._muted = value;
     this.gain.gain.value = value ? 0 : this._volume;
   }
@@ -105,12 +110,12 @@ export class Audio {
    * @throws {Error} If the fetch fails.
    */
   async registerSound(key: string, path: string, baseUrl = "/"): Promise<void> {
-    if (!this.ctx) throw new Error("AudioSystem: not initialized");
-    if (this.sounds.has(key)) throw new Error(`AudioSystem: key "${key}" already registered`);
+    if (!this.ctx) throw new Error("Audio: not initialized");
+    if (this.sounds.has(key)) throw new Error(`Audio: key "${key}" already registered`);
 
     const url = new URL(path, new URL(baseUrl, location.href).href).toString();
     const res  = await fetch(url);
-    if (!res.ok) throw new Error(`AudioSystem: failed to load "${key}" (${res.status} ${res.statusText})`);
+    if (!res.ok) throw new Error(`Audio: failed to load "${key}" (${res.status} ${res.statusText})`);
 
     const buffer = await this.ctx.decodeAudioData(await res.arrayBuffer());
     this.sounds.set(key, { buffer, instances: new Set() });
@@ -118,13 +123,13 @@ export class Audio {
 
   /** Plays a registered sound by key.
    * @param key - The key used when registering the sound.
-   * @param opts.loop - Whether the sound should loop. Default: `false`.
+   * @param opts - See {@link PlaySoundOptions}.
    * @throws {Error} If not initialized or if `key` is unknown.
    */
-  playSound(key: string, opts: { loop?: boolean } = {}): void {
-    if (!this.ctx || !this.gain) throw new Error("AudioSystem: not initialized");
+  playSound(key: string, opts: PlaySoundOptions = {}): void {
+    if (!this.ctx || !this.gain) throw new Error("Audio: not initialized");
     const sound = this.sounds.get(key);
-    if (!sound) throw new Error(`AudioSystem: unknown key "${key}"`);
+    if (!sound) throw new Error(`Audio: unknown key "${key}"`);
 
     const src = this.ctx.createBufferSource();
     src.buffer = sound.buffer;
@@ -140,9 +145,9 @@ export class Audio {
    * @throws {Error} If not initialized or if `key` is unknown.
    */
   stopSound(key: string): void {
-    if (!this.ctx || !this.gain) throw new Error("AudioSystem: not initialized");
+    if (!this.ctx || !this.gain) throw new Error("Audio: not initialized");
     const sound = this.sounds.get(key);
-    if (!sound) throw new Error(`AudioSystem: unknown key "${key}"`);
+    if (!sound) throw new Error(`Audio: unknown key "${key}"`);
     for (const src of sound.instances) {
       try { src.stop(); }
       catch (e) {
