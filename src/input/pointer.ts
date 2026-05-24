@@ -42,6 +42,11 @@ const onMenu = (e: MouseEvent) => {
   e.preventDefault();
 }
 
+/** Initializes pointer input listeners and binds to the given canvas for coordinate mapping.
+ * @param canvas - The canvas element used to transform pointer coordinates.
+ * @returns A cleanup function that removes all listeners and clears state.
+ * @throws {Error} If already initialized.
+ */
 export function initPointer(canvas: HTMLCanvasElement): () => void {
   if (isPointerInitialized) throw new Error("initPointer: already initialized, call cleanup first");
   isPointerInitialized = true;
@@ -67,12 +72,28 @@ export function initPointer(canvas: HTMLCanvasElement): () => void {
   };
 }
 
+/** Returns `true` if the given pointer button is currently held down.
+ * @param button - Pointer button index. Default: `0` (primary).
+ */
 export function isPointerDown(button = 0): boolean      { return down.has(button); }
+
+/** Returns `true` if the given button was clicked this frame.
+ * @param button - Pointer button index. Default: `0` (primary).
+ */
 export function wasPointerClicked(button = 0): boolean  { return clickedFrame.has(button); }
+
+/** Returns `true` if the given button was released this frame.
+ * @param button - Pointer button index. Default: `0` (primary).
+ */
 export function wasPointerReleased(button = 0): boolean { return releasedFrame.has(button); }
+
+/** Returns the pointer's current X position in canvas pixel coordinates. */
 export function pointerX(): number { return posX; }
+
+/** Returns the pointer's current Y position in canvas pixel coordinates. */
 export function pointerY(): number { return posY; }
 
+/** Advances the per-frame click and release state. Called once per frame by {@link startLoop}. */
 export function clearFramePointer(): void {
   clickedFrame = new Set(clicked);
   releasedFrame = new Set(released);
@@ -80,6 +101,7 @@ export function clearFramePointer(): void {
   released.clear();
 }
 
+/** Clears the per-frame click and release state immediately. */
 export function flushPointer(): void {
   clickedFrame.clear();
   releasedFrame.clear();

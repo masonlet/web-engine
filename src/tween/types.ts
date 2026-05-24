@@ -13,6 +13,7 @@ export type TweenPropValue = number | { from: number; to: number };
 /** Map of supported property names to target values. */
 export type TweenProps = Partial<Record<keyof TweenTarget, TweenPropValue>>;
 
+/** Configuration for a tween animation. */
 export interface TweenConfig {
   /** Target or array of targets whose properties will be animated. */
   targets: TweenTargets;
@@ -47,6 +48,7 @@ export interface TweenConfig {
   onComplete?: () => void;
 }
 
+/** A handle to control a running tween returned by {@link TweenManager.add}.*/
 export interface TweenHandle {
   /** Immediately stop and remove the tween. */
   stop(): void;
@@ -54,11 +56,20 @@ export interface TweenHandle {
   pause(): void;
   /** Resume a paused tween. */
   resume(): void;
+  /** `true` if the tween is active and not paused. */
   readonly isPlaying: boolean;
 }
 
+/** Manages a collection of active tweens, advancing them each frame. */
 export interface TweenManager {
+  /** Adds and starts a tween from the given config.
+   * @returns A {@link TweenHandle} to control the tween.
+   */
   add(config: TweenConfig): TweenHandle;
+
+  /** Advances all active tweens by `deltaMs` **ms**. Call once per frame. */
   update(deltaMs: number): void;
+
+  /** Immediately stops and removes all active tweens. */
   stopAll(): void;
 }

@@ -34,9 +34,18 @@ interface ActiveTween {
   readonly onRepeat:   (() => void)                 | undefined;
 }
 
+/** Creates a tween manager that drives property animations each frame.
+ *
+ * Call `update` once per frame with the frame delta in **ms**.
+ *
+ * @returns A {@link TweenManager} with `add`, `update`, and `stopAll`.
+ */
 export function createTweenManager(): TweenManager {
   const tweens = new Set<ActiveTween>();
 
+  /** Adds and starts a tween from the given config.
+   * @returns A {@link TweenHandle} to control the tween.
+   */
   function add(config: TweenConfig): TweenHandle {
     const targetArray = Array.isArray(config.targets) ? [...config.targets] : [config.targets];
     const easeFn = TWEEN_EASING[config.ease ?? 'linear'];
@@ -85,6 +94,7 @@ export function createTweenManager(): TweenManager {
     };
   }
 
+  /** Advances all active tweens by `deltaMs` **milliseconds**. Call once per frame. */
   function update(deltaMs: number): void {
     for (const tween of [...tweens]) {
       if (tween.paused || tween.stopped) continue;
@@ -171,6 +181,7 @@ export function createTweenManager(): TweenManager {
     }
   }
 
+  /** Immediately stops and removes all active tweens. */
   function stopAll(): void {
     tweens.clear();
   }
