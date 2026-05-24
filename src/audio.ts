@@ -1,6 +1,11 @@
 /** Represents a registered sound with its decoded buffer and active playback instances. */
 export type Sound = { buffer: AudioBuffer; instances: Set<AudioBufferSourceNode> };
 
+/** Options for {@link Audio.playSound}. */
+export type PlaySoundOptions = {
+  loop?: boolean
+};
+
 /** Manages Web Audio API playback, volume, and sound registration.
  *
  * Must be initialized with {@link Audio.init} before any other methods are called.
@@ -118,10 +123,10 @@ export class Audio {
 
   /** Plays a registered sound by key.
    * @param key - The key used when registering the sound.
-   * @param opts.loop - Whether the sound should loop. Default: `false`.
+   * @param opts - See {@link PlaySoundOptions}.
    * @throws {Error} If not initialized or if `key` is unknown.
    */
-  playSound(key: string, opts: { loop?: boolean } = {}): void {
+  playSound(key: string, opts: PlaySoundOptions = {}): void {
     if (!this.ctx || !this.gain) throw new Error("Audio: not initialized");
     const sound = this.sounds.get(key);
     if (!sound) throw new Error(`Audio: unknown key "${key}"`);
