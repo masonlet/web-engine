@@ -16,10 +16,7 @@ A lightweight 2D game engine for the browser, built with TypeScript and the Web 
 | `update` | Fixed or variable timestep game loop |
 | `input/keyboard` | Per-frame keyboard state |
 | `input/pointer` | Per-frame pointer/mouse state with canvas scaling |
-| `audio/context` | Web Audio context initialization and lifecycle |
-| `audio/mixer` | Volume and mute controls |
-| `audio/playback` | Play and stop sounds |
-| `audio/registry` | Load and register sounds by key |
+| `audio` | Web Audio context, volume, mute, and sound playback |
 | `assets` | Image loading and tinting |
 | `physics/body` | Physics body creation and OBB/AABB adapters |
 | `physics/collision` | OBB vs AABB and OBB vs OBB SAT collision |
