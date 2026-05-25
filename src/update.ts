@@ -2,7 +2,7 @@ import { clearFramePointer  } from "./input/pointer.ts";
 import { clearFrameKeyboard } from "./input/keyboard.ts";
 
 /** Options for configuring the game loop. */
-interface LoopOptions {
+export interface LoopOptions {
   /** Fixed timestep in **ms**, or "variable" for frame-rate dependent updates. */
   tickRate: number | "variable";
   /** Maximum elapsed time per frame in **ms**. */
