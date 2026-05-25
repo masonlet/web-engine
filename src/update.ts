@@ -7,6 +7,8 @@ export interface LoopOptions {
   tickRate: number | "variable";
   /** Maximum elapsed time per frame in **ms**. */
   maxDelta: number;
+  /** Automatically pause the loop when the page is hidden. */
+  pauseOnHidden: boolean;
 }
 
 /** Handle returned by {@link startLoop} to control the running game loop. */
@@ -38,7 +40,7 @@ export function startLoop(
   render: () => void,
   options: LoopOptions,
 ): LoopHandle {
-  const { tickRate, maxDelta } = options;
+  const { tickRate, maxDelta, pauseOnHidden } = options;
   if (typeof tickRate === "number" && (!Number.isFinite(tickRate) || tickRate <= 0)) {
     throw new RangeError(
       `startLoop: tickRate must be "variable" or a positive finite number, got ${tickRate}`
@@ -54,6 +56,13 @@ export function startLoop(
   let accumulator = 0;
   let lastTime    = performance.now();
   let paused      = false;
+
+  let visibilityCleanup: (() => void) | null = null;
+  if (pauseOnHidden) {
+    const onVisibility = () => { paused = document.hidden; };
+    document.addEventListener("visibilitychange", onVisibility);
+    visibilityCleanup = () => document.removeEventListener("visibilitychange", onVisibility);
+  }
 
   function frame(nowMs: number) {
     if (paused) {
@@ -83,7 +92,10 @@ export function startLoop(
   reqId = requestAnimationFrame(frame);
 
   return {
-    stop:   () => { if (reqId !== null) { cancelAnimationFrame(reqId); reqId = null; } },
+    stop:   () => {
+      if (reqId !== null) { cancelAnimationFrame(reqId); reqId = null; }
+      visibilityCleanup?.();
+    },
     pause:  () => { paused = true; },
     resume: () => { paused = false; },
   };
