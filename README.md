@@ -22,6 +22,9 @@ A lightweight 2D game engine for the browser, built with TypeScript and the Web 
 | `physics/collision` | OBB vs AABB and OBB vs OBB SAT collision |
 | `physics/geometry` | Corner and projection math |
 | `physics/overlap` | Overlap and containment queries |
+| `tween/easing` | Easing functions and lookup table |
+| `tween/manager` | Frame-driven tween manager |
+| `tween/types`| Tween config, handle, and target types |
 
 ## Installation
 ```bash
