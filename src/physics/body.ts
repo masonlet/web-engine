@@ -1,4 +1,4 @@
-import type { PhysicsBody, OBB, AABB } from "./types.ts";
+import type { RectBody, OBB, AABB } from "./types.ts";
 
 /** Creates a {@link PhysicsBody} with zero initial velocity.
  * @param params.angle - Initial angle in radians. Default: `0`.
@@ -10,7 +10,7 @@ export function createBody(params: {
   h: number;
   mass: number;
   angle?: number;
-}): PhysicsBody {
+}): RectBody {
   return {
     position: { x: params.x, y: params.y },
     velocity: { x: 0, y: 0 },
@@ -22,7 +22,7 @@ export function createBody(params: {
 }
 
 /** Returns the {@link AABB} for the body's current position. */
-export function getBodyAABB(body: PhysicsBody): AABB {
+export function getBodyAABB(body: RectBody): AABB {
   return {
     cx: body.position.x + body.w / 2,
     cy: body.position.y + body.h / 2,
@@ -32,7 +32,7 @@ export function getBodyAABB(body: PhysicsBody): AABB {
 }
 
 /** Returns the {@link OBB} for the body's current position and angle. */
-export function getBodyOBB(body: PhysicsBody): OBB {
+export function getBodyOBB(body: RectBody): OBB {
   return {
     cx: body.position.x + body.w / 2,
     cy: body.position.y + body.h / 2,
