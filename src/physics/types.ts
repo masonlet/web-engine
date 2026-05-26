@@ -4,22 +4,6 @@ export interface Vec2 {
   y: number;
 }
 
-/** A physics body with position, velocity, angle, and dimensions. */
-export interface PhysicsBody {
-  /** World-space position in pixels. */
-  position: Vec2;
-  /** Velocity in pixels per second. */
-  velocity: Vec2;
-  /** Facing angle in radians. 0 = facing right. */
-  angle: number;
-  /** Hitbox width in pixels. */
-  w: number;
-  /** Hitbox height in pixels. */
-  h: number;
-  /** Mass. */
-  mass: number;
-}
-
 /** Oriented Bounding Box - a rotated rectangle defined by center, half-extents, and angle. */
 export interface OBB {
   /** Center x in world pixels. */
@@ -34,16 +18,16 @@ export interface OBB {
   angle: number;
 }
 
-/** Axis-Aligned Bounding Box - a non-rotated rectangle defined by top-left corner and size. */
+/** Axis-Aligned Bounding Box - a non-rotated rectangle defined by center and size. */
 export interface AABB {
-  /** Top-left x in world pixels. */
-  x: number;
-  /** Top-left y in world pixels. */
-  y: number;
-  /** Width in pixels. */
-  w: number;
-  /** Height in pixels. */
-  h: number;
+  /** Center x in world pixels. */
+  cx: number;
+  /** Center y in world pixels. */
+  cy: number;
+  /** Half-width in pixels. */
+  hw: number;
+  /** Half-height in pixels. */
+  hh: number;
 }
 
 /** Minimum Translation Vector - the axis and depth needed to resolve a collision. */
@@ -52,4 +36,20 @@ export interface MTV {
   axis: Vec2;
   /** Penetration depth along axis. */
   depth: number;
+}
+
+/** A physics body with position, velocity, angle, and dimensions. */
+export interface PhysicsBody {
+  /** World-space position in pixels. */
+  position: Vec2;
+  /** Velocity in pixels per second. */
+  velocity: Vec2;
+  /** Facing angle in radians. 0 = facing right. */
+  angle: number;
+  /** Hitbox width in pixels. */
+  w: number;
+  /** Hitbox height in pixels. */
+  h: number;
+  /** Mass. */
+  mass: number;
 }

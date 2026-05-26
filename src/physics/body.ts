@@ -24,10 +24,10 @@ export function createBody(params: {
 /** Returns the {@link AABB} for the body's current position. */
 export function getBodyAABB(body: PhysicsBody): AABB {
   return {
-    x: body.position.x,
-    y: body.position.y,
-    w: body.w,
-    h: body.h,
+    cx: body.position.x + body.w / 2,
+    cy: body.position.y + body.h / 2,
+    hw: body.w / 2,
+    hh: body.h / 2,
   };
 }
 

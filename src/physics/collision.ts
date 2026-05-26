@@ -12,11 +12,11 @@ export function obbVsAabb(obb: OBB, aabb: AABB): MTV | null {
   const wx: Vec2 = { x: 1, y: 0 };
   const wy: Vec2 = { x: 0, y: 1 };
 
-  const obbCs = obbCorners(obb);
-  const aabbCs = aabbCorners(aabb);
-  const axes: Vec2[] = [ux, uy, wx, wy];
+  const obbCs:  Vec2[] = obbCorners(obb);
+  const aabbCs: Vec2[] = aabbCorners(aabb);
+  const axes:   Vec2[] = [ux, uy, wx, wy];
 
-  let minDepth = Infinity;
+  let minDepth      = Infinity;
   let minAxis: Vec2 = { x: 0, y: 0 };
 
   for (const axis of axes) {
@@ -27,9 +27,7 @@ export function obbVsAabb(obb: OBB, aabb: AABB): MTV | null {
 
     if (overlap < minDepth) {
       minDepth = overlap;
-      const aabbCx = aabb.x + aabb.w / 2;
-      const aabbCy = aabb.y + aabb.h / 2;
-      const dir = (obb.cx - aabbCx) * axis.x + (obb.cy - aabbCy) * axis.y;
+      const dir = (obb.cx - aabb.cx) * axis.x + (obb.cy - aabb.cy) * axis.y;
       minAxis = dir < 0 ? { x: -axis.x, y: -axis.y } : axis;
     }
   }
@@ -47,11 +45,11 @@ export function obbVsObb(a: OBB, b: OBB): MTV | null {
   const bux: Vec2 = { x: bCos, y: bSin };
   const buy: Vec2 = { x: -bSin, y: bCos };
 
-  const aCorners = obbCorners(a);
-  const bCorners = obbCorners(b);
-  const axes: Vec2[] = [aux, auy, bux, buy];
+  const aCorners: Vec2[] = obbCorners(a);
+  const bCorners: Vec2[] = obbCorners(b);
+  const axes:     Vec2[] = [aux, auy, bux, buy];
 
-  let minDepth = Infinity;
+  let minDepth      = Infinity;
   let minAxis: Vec2 = { x: 0, y: 0 };
 
   for (const axis of axes) {
