@@ -1,6 +1,6 @@
 import type { OBB, AABB } from "./types.ts";
-import { obbCorners } from "./geometry.ts";
-import { obbVsAabb } from "./collision.ts";
+import { obbCorners     } from "./geometry.ts";
+import { obbVsAabb      } from "./collision.ts";
 
 /** Returns all regions from `regions` that overlap the given OBB. */
 export function overlappingRegions(obb: OBB, regions: AABB[]): AABB[] {
@@ -13,18 +13,15 @@ export function overlappingRegions(obb: OBB, regions: AABB[]): AABB[] {
  * @param padding - Inset applied to all sides of the AABB. Default: `0`.
  */
 export function obbInsideAabb(obb: OBB, aabb: AABB, padding = 0): boolean {
-  const minX = aabb.x + padding;
-  const minY = aabb.y + padding;
-  const maxX = aabb.x + aabb.w - padding;
-  const maxY = aabb.y + aabb.h - padding;
+  const minX = aabb.cx - aabb.hw + padding;
+  const minY = aabb.cy - aabb.hh + padding;
+  const maxX = aabb.cx + aabb.hw - padding;
+  const maxY = aabb.cy + aabb.hh - padding;
   if (maxX <= minX || maxY <= minY) return false;
 
-  for (const c of obbCorners(obb)) {
-    if (c.x < minX
-     || c.x > maxX
-     || c.y < minY
-     || c.y > maxY
-    ) return false;
-  }
+  for (const c of obbCorners(obb)) if (
+    c.x < minX || c.x > maxX || c.y < minY || c.y > maxY
+  ) return false;
+
   return true;
 }

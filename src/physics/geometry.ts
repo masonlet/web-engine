@@ -17,10 +17,10 @@ export function obbCorners(o: OBB): Vec2[] {
 /** Returns the four world-space corner vertices of an {@link AABB}. */
 export function aabbCorners(a: AABB): Vec2[] {
   return [
-    { x: a.x,         y: a.y },
-    { x: a.x + a.w,   y: a.y },
-    { x: a.x + a.w,   y: a.y + a.h },
-    { x: a.x,         y: a.y + a.h },
+    { x: a.cx - a.hw, y: a.cy - a.hh },
+    { x: a.cx + a.hw, y: a.cy - a.hh },
+    { x: a.cx + a.hw, y: a.cy + a.hh },
+    { x: a.cx - a.hw, y: a.cy + a.hh },
   ];
 }
 
