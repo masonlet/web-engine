@@ -1,4 +1,4 @@
-import type { Vec2, OBB, AABB, MTV } from "./types.ts";
+import type { Vec2, OBB, AABB, MTV, Circle } from "./types.ts";
 import { obbCorners, aabbCorners, project } from "./geometry.ts";
 
 /** Tests an OBB against an AABB using the Separating Axis Theorem.
@@ -65,4 +65,19 @@ export function obbVsObb(a: OBB, b: OBB): MTV | null {
     }
   }
   return { axis: minAxis, depth: minDepth };
+}
+
+/** Tests two circles for overlap.
+ * @returns The {@link MTV} to resolve the collision, or `null` if no overlap.
+*/
+export function circleVsCircle(a: Circle, b: Circle): MTV | null {
+  const dx = b.cx - a.cx;
+  const dy = b.cy - a.cy;
+  const distSq = dx * dx + dy * dy;
+  const minDist = a.r + b.r;
+  if (distSq >= minDist * minDist) return null;
+  const dist = Math.sqrt(distSq);
+  const depth = minDist - dist;
+  if (dist === 0) return { axis: { x: 1, y: 0 }, depth };
+  return { axis: { x: dx / dist, y: dy / dist }, depth };
 }
