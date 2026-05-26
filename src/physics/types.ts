@@ -30,6 +30,16 @@ export interface AABB {
   hh: number;
 }
 
+/** Circle defined by center and radius. */
+export interface Circle {
+  /** Center x in world pixels. */
+  cx: number;
+  /** Center y in world pixels. */
+  cy: number;
+  /** Radius in pixels. */
+  r: number;
+}
+
 /** Minimum Translation Vector - the axis and depth needed to resolve a collision. */
 export interface MTV {
   /** Unit vector pointing out of the AABB toward the OBB. */
