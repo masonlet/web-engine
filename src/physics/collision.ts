@@ -81,3 +81,17 @@ export function circleVsCircle(a: Circle, b: Circle): MTV | null {
   if (dist === 0) return { axis: { x: 1, y: 0 }, depth };
   return { axis: { x: dx / dist, y: dy / dist }, depth };
 }
+
+/** Tests a circle against an AABB.
+ * @returns The {@link MTV} to resolve the collision, or `null` if no overlap.
+ */
+export function circleVsAabb(c: Circle, aabb: AABB): MTV | null {
+  const nearX = Math.max(aabb.cx - aabb.hw, Math.min(aabb.cx + aabb.hw, c.cx));
+  const nearY = Math.max(aabb.cy - aabb.hh, Math.min(aabb.cy + aabb.hh, c.cy));
+  const dx = c.cx - nearX;
+  const dy = c.cy - nearY;
+  const distSq = dx * dx + dy * dy;
+  if (distSq >= c.r * c.r || distSq === 0) return null;
+  const dist = Math.sqrt(distSq);
+  return { axis: { x: dx / dist, y: dy / dist }, depth: c.r - dist };
+}
