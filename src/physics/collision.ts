@@ -71,14 +71,16 @@ export function obbVsObb(a: OBB, b: OBB): MTV | null {
  * @returns The {@link MTV} to resolve the collision, or `null` if no overlap.
 */
 export function circleVsCircle(a: Circle, b: Circle): MTV | null {
-  const dx = b.cx - a.cx;
-  const dy = b.cy - a.cy;
-  const distSq = dx * dx + dy * dy;
+  const dx      = b.cx - a.cx;
+  const dy      = b.cy - a.cy;
+  const distSq  = dx * dx + dy * dy;
   const minDist = a.r + b.r;
   if (distSq >= minDist * minDist) return null;
-  const dist = Math.sqrt(distSq);
+
+  const dist  = Math.sqrt(distSq);
   const depth = minDist - dist;
   if (dist === 0) return { axis: { x: 1, y: 0 }, depth };
+
   return { axis: { x: dx / dist, y: dy / dist }, depth };
 }
 
@@ -86,12 +88,36 @@ export function circleVsCircle(a: Circle, b: Circle): MTV | null {
  * @returns The {@link MTV} to resolve the collision, or `null` if no overlap.
  */
 export function circleVsAabb(c: Circle, aabb: AABB): MTV | null {
-  const nearX = Math.max(aabb.cx - aabb.hw, Math.min(aabb.cx + aabb.hw, c.cx));
-  const nearY = Math.max(aabb.cy - aabb.hh, Math.min(aabb.cy + aabb.hh, c.cy));
-  const dx = c.cx - nearX;
-  const dy = c.cy - nearY;
+  const nearX  = Math.max(aabb.cx - aabb.hw, Math.min(aabb.cx + aabb.hw, c.cx));
+  const nearY  = Math.max(aabb.cy - aabb.hh, Math.min(aabb.cy + aabb.hh, c.cy));
+  const dx     = c.cx - nearX;
+  const dy     = c.cy - nearY;
   const distSq = dx * dx + dy * dy;
   if (distSq >= c.r * c.r || distSq === 0) return null;
+
   const dist = Math.sqrt(distSq);
   return { axis: { x: dx / dist, y: dy / dist }, depth: c.r - dist };
+}
+
+/** Tests a circle against an OBB.
+ * @returns The {@link MTV} to resolve the collision, or `null` if no overlap.
+ */
+export function circleVsObb(c: Circle, obb: OBB): MTV | null {
+  const cos    = Math.cos(obb.angle);
+  const sin    = Math.sin(obb.angle);
+  const dx     = c.cx - obb.cx;
+  const dy     = c.cy - obb.cy;
+  const localX = dx * cos + dy * sin;
+  const localY = -dx * sin + dy * cos;
+  const nearX  = Math.max(-obb.hw, Math.min(obb.hw, localX));
+  const nearY  = Math.max(-obb.hh, Math.min(obb.hh, localY));
+  const diffX  = localX - nearX;
+  const diffY  = localY - nearY;
+  const distSq = diffX * diffX + diffY * diffY;
+  if (distSq >= c.r * c.r || distSq === 0) return null;
+
+  const dist   = Math.sqrt(distSq);
+  const worldX = diffX * cos - diffY * sin;
+  const worldY = diffX * sin + diffY * cos;
+  return { axis: { x: worldX / dist, y: worldY / dist }, depth: c.r - dist };
 }
